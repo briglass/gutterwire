@@ -19,7 +19,10 @@
       "Bash(curl -s -o /dev/null -w \"home: %{http_code}\\\\n\" http://localhost:3000/)",
       "Bash(curl -s -o /dev/null -w \"admin: %{http_code}\\\\n\" http://localhost:3000/admin)",
       "Bash(curl -s http://localhost:3000/)",
-      "PowerShell(git check-ignore -v .env.local)"
+      "PowerShell(git check-ignore -v .env.local)",
+      "PowerShell(git add vercel.json)",
+      "PowerShell(git push)",
+      "PowerShell(git commit -m 'Pin framework to nextjs in vercel.json' -m 'Fixes the missing-public-directory deploy error when the Vercel project framework preset is not set to Next.js.' -m 'Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>')"
     ]
   }
 }
