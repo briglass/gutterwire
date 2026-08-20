@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(node -e \"console.log\\(require\\('crypto'\\).randomBytes\\(32\\).toString\\('hex'\\)\\)\")",
+      "PowerShell(npm install)",
+      "PowerShell(npm uninstall @vercel/postgres)",
+      "PowerShell(npm install @neondatabase/serverless)",
+      "PowerShell(npm audit)",
+      "PowerShell(npm install next@16 react@latest react-dom@latest)",
+      "PowerShell(npm run build)",
+      "PowerShell(npm run start)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/api/clips)",
+      "Bash(break)",
+      "Bash(sleep 1)",
+      "Bash(echo)",
+      "Bash(echo \"--- public clips ---\")",
+      "Bash(curl -s -o /dev/null -w \"home: %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"admin: %{http_code}\\\\n\" http://localhost:3000/admin)",
+      "Bash(curl -s http://localhost:3000/)",
+      "PowerShell(git check-ignore -v .env.local)"
+    ]
+  }
+}

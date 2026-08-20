@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+.vercel/
+
+# local env files -- keep secrets out of git
+.env
+.env.local
+.env*.local
+
+npm-debug.log*
+.DS_Store
