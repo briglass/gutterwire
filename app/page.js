@@ -69,6 +69,14 @@ export default function HomePage() {
   const [copiedId, setCopiedId] = useState(null);
   const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(() => {
+    try {
+      const saved = localStorage.getItem('gw_autorefresh');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
   const scrolledRef = useRef(false);
   const loadingRef = useRef(false);
   const clipsRef = useRef([]);
@@ -106,6 +114,15 @@ export default function HomePage() {
     setVotes(loadVotes());
     loadMore();
   }, [loadMore]);
+
+  // Auto-refresh the page every 60 seconds unless paused by user
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(() => {
+      window.location.reload();
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
 
   // Load the next page whenever the sentinel below the stack nears the
   // viewport.
@@ -253,6 +270,26 @@ export default function HomePage() {
           <a href="/admin">editors</a>
         </p>
       </footer>
+
+      <button
+        className={`autorefresh-toggle${autoRefresh ? ' active' : ' paused'}`}
+        onClick={() => {
+          setAutoRefresh((prev) => {
+            const next = !prev;
+            try {
+              localStorage.setItem('gw_autorefresh', JSON.stringify(next));
+            } catch {}
+            return next;
+          });
+        }}
+        title={autoRefresh ? 'Auto-refresh active (every 60s) — click to pause' : 'Auto-refresh paused — click to resume'}
+        aria-label={autoRefresh ? 'Pause auto-refresh' : 'Resume auto-refresh'}
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+        </svg>
+        <span>{autoRefresh ? 'LIVE' : 'PAUSED'}</span>
+      </button>
     </div>
   );
 }
