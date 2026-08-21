@@ -1,9 +1,9 @@
-import { Playfair_Display_SC } from 'next/font/google';
+import { Syne } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 
-const titleFont = Playfair_Display_SC({
-  weight: ['700', '900'],
+const titleFont = Syne({
+  weight: ['700', '800'],
   subsets: ['latin'],
   variable: '--font-title',
 });
