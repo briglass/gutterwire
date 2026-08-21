@@ -10,7 +10,7 @@ const titleFont = Bebas_Neue({
 export const metadata = {
   metadataBase: new URL('https://www.gutterwire.com'),
   title: 'GUTTERWIRE',
-  description: 'Your wire from the gutter. Clips from everywhere, stitched together.',
+  description: 'Monitor the gutter without getting dirty. Clips from everywhere, stitched together.',
 };
 
 export const viewport = {

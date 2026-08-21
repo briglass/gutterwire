@@ -146,7 +146,7 @@ export default function HomePage() {
         <h1>
           <a href="/">GUTTERWIRE</a>
         </h1>
-        <p className="tagline">Your wire from the gutter</p>
+        <p className="tagline">MONITOR THE GUTTER WITHOUT GETTING DIRTY</p>
       </header>
 
       {error && <p className="wire-status">{error}</p>}
