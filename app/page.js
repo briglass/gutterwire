@@ -71,6 +71,7 @@ export default function HomePage() {
   const [hasMore, setHasMore] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [darkModePopup, setDarkModePopup] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(() => {
     try {
       const saved = localStorage.getItem('gw_autorefresh');
@@ -316,6 +317,19 @@ export default function HomePage() {
             <button
               className="fab-item"
               onClick={() => {
+                setDarkModePopup(true);
+                setMenuOpen(false);
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+              <span>DARK MODE</span>
+            </button>
+
+            <button
+              className="fab-item"
+              onClick={() => {
                 setAboutOpen(true);
                 setMenuOpen(false);
               }}
@@ -350,6 +364,26 @@ export default function HomePage() {
           )}
         </button>
       </div>
+
+      {/* Dark Mode Joke Modal */}
+      {darkModePopup && (
+        <div className="about-backdrop" onClick={() => setDarkModePopup(false)}>
+          <div className="about-modal" style={{ maxWidth: '420px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+            <div className="about-header" style={{ justifyContent: 'flex-end', borderBottom: 'none', marginBottom: '0' }}>
+              <button
+                className="about-close"
+                onClick={() => setDarkModePopup(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="about-body" style={{ fontSize: '18px', fontWeight: 'bold', padding: '10px 10px 20px' }}>
+              “What, the news isn't dark enough for you already?”
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* About Floating Modal */}
       {aboutOpen && (
