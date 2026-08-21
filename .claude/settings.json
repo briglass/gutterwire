@@ -22,7 +22,10 @@
       "PowerShell(git check-ignore -v .env.local)",
       "PowerShell(git add vercel.json)",
       "PowerShell(git push)",
-      "PowerShell(git commit -m 'Pin framework to nextjs in vercel.json' -m 'Fixes the missing-public-directory deploy error when the Vercel project framework preset is not set to Next.js.' -m 'Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>')"
+      "PowerShell(git commit -m 'Pin framework to nextjs in vercel.json' -m 'Fixes the missing-public-directory deploy error when the Vercel project framework preset is not set to Next.js.' -m 'Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>')",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen)",
+      "PowerShell(git add -A)",
+      "PowerShell(git commit -m 'Redesign wire: inline flowing excerpts, score-based highlighting, share links' -m 'Excerpts now run together as one wrapped block of rounded chips; source labels removed; score maps to highlight \\(red top band, grayscale fade\\) instead of page position; per-excerpt share button links to /#clip-ID on this site; masthead is one-word GUTTERWIRE in sans-serif.' -m 'Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>')"
     ]
   }
 }

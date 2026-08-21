@@ -1,18 +1,20 @@
-# GUTTER WIRE
+# GUTTERWIRE
 
-A Drudge-style clip wire. Editors paste excerpts (a sentence or a paragraph)
-with a link to the source; readers see all the clips stitched together across
-the page, click through to sources, and vote clips up or down — which moves
-them toward the top or bottom of the page.
+A clip wire. Editors paste excerpts (a sentence or a paragraph) with a link
+to the source; readers see all the clips run together into one big flowing
+block of text, click through to sources, and vote clips up or down — which
+controls how highlighted each excerpt looks.
 
-Built with Next.js (App Router) + Vercel Postgres.
+Built with Next.js (App Router) + Neon Postgres.
 
 ## Features
 
-- **Public wire** (`/`): all visible clips in a dense multi-column layout,
-  sorted by score. Each clip links to its source. `+` / `−` buttons let any
-  reader nudge a clip up or down (one vote per clip per browser; clicking the
-  same button again undoes the vote).
+- **Public wire** (`/`): visible clips flow inline like one long paragraph,
+  newest first, each in a rounded chip. Score sets the highlight: the hottest
+  excerpts go reddish, then grays fade down to washed-out for low scores.
+  Each clip links to its source. `+` / `−` buttons let any reader vote (one
+  vote per clip per browser; clicking the same button again undoes it), and a
+  share button copies a link to the excerpt on this site (`/#clip-ID`).
 - **Editor desk** (`/admin`): editors log in and can
   - paste a new clip (text + source URL, optional starting score),
   - set a clip's score directly,

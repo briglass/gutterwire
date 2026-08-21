@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 
 const VOTES_KEY = 'gw_votes'; // { [clipId]: 1 | -1 } for this browser
 
@@ -20,18 +20,52 @@ function saveVotes(votes) {
   }
 }
 
-function hostOf(url) {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return url;
+function lerp(a, b, t) {
+  return Math.round(a + (b - a) * t);
+}
+
+// Score maps to how "hot" an excerpt looks, not where it sits on the page:
+// the top band goes reddish, below that the grays run from strong (dark text,
+// solid chip) down to faded (pale chip, washed-out text).
+function clipStyle(score, min, max) {
+  const t = max === min ? 0.55 : (score - min) / (max - min);
+  if (max !== min && t >= 0.85) {
+    return { backgroundColor: '#f3cbc3', color: '#6e1204', fontWeight: 700 };
   }
+  const bg = lerp(247, 211, t);
+  const fg = lerp(174, 15, t);
+  return {
+    backgroundColor: `rgb(${bg},${bg},${bg})`,
+    color: `rgb(${fg},${fg},${fg})`,
+    fontWeight: t > 0.62 ? 600 : 400,
+  };
+}
+
+function ShareIcon() {
+  return (
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="M8.7 10.6l6.6-3.8M8.7 13.4l6.6 3.8" />
+    </svg>
+  );
 }
 
 export default function HomePage() {
   const [clips, setClips] = useState(null);
   const [votes, setVotes] = useState({});
+  const [copiedId, setCopiedId] = useState(null);
   const [error, setError] = useState(null);
+  const scrolledRef = useRef(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -50,23 +84,33 @@ export default function HomePage() {
     refresh();
   }, [refresh]);
 
+  // If someone arrives via a shared link (/#clip-N), scroll to that excerpt
+  // once the clips have rendered; CSS :target rings it.
+  useEffect(() => {
+    if (!clips || scrolledRef.current) return;
+    const hash = window.location.hash;
+    if (hash.startsWith('#clip-')) {
+      const el = document.getElementById(hash.slice(1));
+      if (el) {
+        scrolledRef.current = true;
+        el.scrollIntoView({ block: 'center' });
+      }
+    }
+  }, [clips]);
+
   async function vote(clip, dir) {
     const prev = votes[clip.id] || 0;
     const next = prev === dir ? 0 : dir; // same button again = undo
     const delta = next - prev;
     if (delta === 0) return;
 
-    // optimistic: update score locally and re-sort so the clip visibly moves
     const newVotes = { ...votes };
     if (next === 0) delete newVotes[clip.id];
     else newVotes[clip.id] = next;
     setVotes(newVotes);
     saveVotes(newVotes);
-    setClips((cs) =>
-      [...cs]
-        .map((c) => (c.id === clip.id ? { ...c, score: c.score + delta } : c))
-        .sort((a, b) => b.score - a.score || new Date(b.created_at) - new Date(a.created_at))
-    );
+    // optimistic: bump the score locally; the highlight shifts on its own
+    setClips((cs) => cs.map((c) => (c.id === clip.id ? { ...c, score: c.score + delta } : c)));
 
     try {
       await fetch('/api/vote', {
@@ -79,11 +123,34 @@ export default function HomePage() {
     }
   }
 
+  async function share(clip) {
+    const url = `${window.location.origin}/#clip-${clip.id}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'GUTTERWIRE', url });
+      } catch {
+        /* user dismissed the share sheet */
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedId(clip.id);
+      setTimeout(() => setCopiedId((id) => (id === clip.id ? null : id)), 1600);
+    } catch {
+      window.prompt('Copy link:', url);
+    }
+  }
+
+  const scores = clips ? clips.map((c) => c.score) : [];
+  const min = scores.length ? Math.min(...scores) : 0;
+  const max = scores.length ? Math.max(...scores) : 0;
+
   return (
     <div className="container">
       <header className="masthead">
         <h1>
-          <a href="/">Gutter Wire</a>
+          <a href="/">GUTTERWIRE</a>
         </h1>
         <p className="tagline">the wire from the gutter &middot; read it all at once</p>
       </header>
@@ -95,37 +162,47 @@ export default function HomePage() {
       )}
 
       {clips !== null && clips.length > 0 && (
-        <main className="wire">
+        <main className="wire-flow">
           {clips.map((clip) => {
             const myVote = votes[clip.id] || 0;
             return (
-              <article className="clip" key={clip.id}>
-                <a className="clip-link" href={clip.url} target="_blank" rel="noopener noreferrer">
-                  {clip.text}
-                </a>
-                <div className="clip-meta">
-                  <span className="clip-source">{hostOf(clip.url)}</span>
-                  <span className="vote-box">
+              <Fragment key={clip.id}>
+                <span
+                  className="clip"
+                  id={`clip-${clip.id}`}
+                  style={clipStyle(clip.score, min, max)}
+                >
+                  <a href={clip.url} target="_blank" rel="noopener noreferrer">
+                    {clip.text}
+                  </a>
+                  <span className="clip-ctrls">
                     <button
-                      className={`vote-btn${myVote === 1 ? ' active-up' : ''}`}
+                      className={`ctrl-btn${myVote === 1 ? ' voted' : ''}`}
                       onClick={() => vote(clip, 1)}
                       aria-label="Vote up"
-                      title="Push toward the top"
+                      title="Heat it up"
                     >
                       +
                     </button>
-                    <span className="vote-score">{clip.score}</span>
                     <button
-                      className={`vote-btn${myVote === -1 ? ' active-down' : ''}`}
+                      className={`ctrl-btn${myVote === -1 ? ' voted' : ''}`}
                       onClick={() => vote(clip, -1)}
                       aria-label="Vote down"
-                      title="Push toward the bottom"
+                      title="Cool it down"
                     >
                       &minus;
                     </button>
+                    <button
+                      className="ctrl-btn"
+                      onClick={() => share(clip)}
+                      aria-label="Share this excerpt"
+                      title="Share"
+                    >
+                      {copiedId === clip.id ? '✓' : <ShareIcon />}
+                    </button>
                   </span>
-                </div>
-              </article>
+                </span>{' '}
+              </Fragment>
             );
           })}
         </main>
@@ -133,7 +210,7 @@ export default function HomePage() {
 
       <footer className="footer">
         <p>
-          GUTTER WIRE &middot; clips link to their original sources &middot;{' '}
+          GUTTERWIRE &middot; excerpts link to their original sources &middot;{' '}
           <a href="/admin">editors</a>
         </p>
       </footer>

@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'GUTTER WIRE',
+  title: 'GUTTERWIRE',
   description: 'The wire from the gutter. Clips from everywhere, stitched together.',
 };
 

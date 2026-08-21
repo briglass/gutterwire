@@ -255,7 +255,7 @@ export default function AdminPage() {
     <div className="container">
       <header className="masthead">
         <h1>
-          <a href="/">Gutter Wire</a>
+          <a href="/">GUTTERWIRE</a>
         </h1>
         <p className="tagline">editor desk</p>
       </header>
@@ -288,7 +288,7 @@ export default function AdminPage() {
       )}
 
       <footer className="footer">
-        <p>GUTTER WIRE EDITOR DESK</p>
+        <p>GUTTERWIRE EDITOR DESK</p>
       </footer>
     </div>
   );
