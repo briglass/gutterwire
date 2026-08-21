@@ -33,8 +33,8 @@ function clipStyle(score, min, max) {
   if (max !== min && t >= 0.85) {
     return { backgroundColor: '#f3cbc3', color: '#6e1204', fontWeight: 700 };
   }
-  const bg = lerp(247, 211, t);
-  const fg = lerp(174, 15, t);
+  const bg = lerp(243, 211, t);
+  const fg = lerp(120, 15, t);
   return {
     backgroundColor: `rgb(${bg},${bg},${bg})`,
     color: `rgb(${fg},${fg},${fg})`,
