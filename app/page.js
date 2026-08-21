@@ -203,7 +203,7 @@ export default function HomePage() {
 
       <footer className="footer">
         <p>
-          GUTTERWIRE &middot; excerpts link to their original sources &middot;{' '}
+          &copy; {new Date().getFullYear()} GUTTERWIRE &middot; excerpts link to their original sources &middot;{' '}
           <a href="/admin">editors</a>
         </p>
       </footer>

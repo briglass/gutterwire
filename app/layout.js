@@ -1,7 +1,7 @@
-import { Anton } from 'next/font/google';
+import { Bebas_Neue } from 'next/font/google';
 import './globals.css';
 
-const titleFont = Anton({
+const titleFont = Bebas_Neue({
   weight: '400',
   subsets: ['latin'],
   variable: '--font-title',
