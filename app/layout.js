@@ -1,8 +1,16 @@
+import { Rubik_Puddles } from 'next/font/google';
 import './globals.css';
 
+const titleFont = Rubik_Puddles({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-title',
+});
+
 export const metadata = {
+  metadataBase: new URL('https://www.gutterwire.com'),
   title: 'GUTTERWIRE',
-  description: 'The wire from the gutter. Clips from everywhere, stitched together.',
+  description: 'Your wire from the gutter. Clips from everywhere, stitched together.',
 };
 
 export const viewport = {
@@ -12,7 +20,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={titleFont.variable}>
       <body>{children}</body>
     </html>
   );

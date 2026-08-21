@@ -3,6 +3,7 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 
 const VOTES_KEY = 'gw_votes'; // { [clipId]: 1 | -1 } for this browser
+const SITE_URL = 'https://www.gutterwire.com'; // canonical home for share links
 
 function loadVotes() {
   try {
@@ -124,15 +125,7 @@ export default function HomePage() {
   }
 
   async function share(clip) {
-    const url = `${window.location.origin}/#clip-${clip.id}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'GUTTERWIRE', url });
-      } catch {
-        /* user dismissed the share sheet */
-      }
-      return;
-    }
+    const url = `${SITE_URL}/#clip-${clip.id}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopiedId(clip.id);
@@ -152,7 +145,7 @@ export default function HomePage() {
         <h1>
           <a href="/">GUTTERWIRE</a>
         </h1>
-        <p className="tagline">the wire from the gutter &middot; read it all at once</p>
+        <p className="tagline">Your wire from the gutter</p>
       </header>
 
       {error && <p className="wire-status">{error}</p>}
@@ -195,8 +188,8 @@ export default function HomePage() {
                     <button
                       className="ctrl-btn"
                       onClick={() => share(clip)}
-                      aria-label="Share this excerpt"
-                      title="Share"
+                      aria-label="Copy link to this excerpt"
+                      title="Copy link"
                     >
                       {copiedId === clip.id ? '✓' : <ShareIcon />}
                     </button>
