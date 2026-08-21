@@ -1,7 +1,7 @@
-import { Rubik_Puddles } from 'next/font/google';
+import { Anton } from 'next/font/google';
 import './globals.css';
 
-const titleFont = Rubik_Puddles({
+const titleFont = Anton({
   weight: '400',
   subsets: ['latin'],
   variable: '--font-title',

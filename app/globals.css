@@ -31,11 +31,12 @@ a {
 }
 
 .masthead h1 {
-  /* Rubik Pipes only ships weight 400; heavier would be synthesized */
-  font-family: var(--font-title), 'Arial Black', Arial, Helvetica, sans-serif;
-  font-weight: 400;
-  font-size: clamp(38px, 8.5vw, 64px);
-  letter-spacing: 2px;
+  font-family: var(--font-title), Impact, 'Arial Black', Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: clamp(42px, 9.5vw, 76px);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  line-height: 1;
   margin: 0;
 }
 
