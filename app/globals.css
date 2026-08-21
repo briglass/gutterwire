@@ -55,28 +55,40 @@ a {
 
 /* ---------- the wire (public feed) ---------- */
 
-/* Excerpts run inline, one after another, wrapping into a single big block
-   of text. Each one is a rounded chip; box-decoration-break keeps the
-   rounded background on every wrapped line fragment. Chip colors are set
-   inline per clip from its score. */
-.wire-flow {
-  font-size: 16px;
-  line-height: 2.25;
-  word-wrap: break-word;
+/* Excerpts stack vertically like chat bubbles, newest first. Each bubble's
+   background/text color is set inline per clip from its score; the vote and
+   share buttons sit in a vertical column to the right of each bubble. */
+.wire-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
-@media (max-width: 640px) {
-  .wire-flow {
-    font-size: 15px;
-  }
+.clip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .clip {
-  border-radius: 8px;
-  padding: 3px 8px;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  flex: 1;
+  min-width: 0;
+  border-radius: 16px;
+  border-bottom-left-radius: 5px;
+  padding: 12px 16px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  overflow-wrap: break-word;
   transition: background-color 0.3s, color 0.3s;
+}
+
+@media (max-width: 640px) {
+  .clip {
+    font-size: 15px;
+    padding: 11px 13px;
+  }
 }
 
 .clip:target {
@@ -86,6 +98,7 @@ a {
 .clip a {
   color: inherit;
   text-decoration: none;
+  display: block;
 }
 
 .clip a:hover {
@@ -93,40 +106,36 @@ a {
 }
 
 .clip-ctrls {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  margin-left: 5px;
-  vertical-align: middle;
-  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-shrink: 0;
 }
 
 .ctrl-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.5);
+  width: 28px;
+  height: 26px;
+  background: #efefef;
   border: 0;
-  border-radius: 5px;
-  color: inherit;
+  border-radius: 7px;
+  color: #555;
   cursor: pointer;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1;
-  min-width: 20px;
-  padding: 4px 5px;
-  opacity: 0.6;
 }
 
 .ctrl-btn:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.9);
+  background: #ddd;
+  color: #000;
 }
 
 .ctrl-btn.voted {
-  opacity: 1;
-  background: rgba(0, 0, 0, 0.8);
+  background: #000;
   color: #fff;
 }
 

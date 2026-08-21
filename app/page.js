@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const VOTES_KEY = 'gw_votes'; // { [clipId]: 1 | -1 } for this browser
 const SITE_URL = 'https://www.gutterwire.com'; // canonical home for share links
@@ -155,12 +155,12 @@ export default function HomePage() {
       )}
 
       {clips !== null && clips.length > 0 && (
-        <main className="wire-flow">
+        <main className="wire-stack">
           {clips.map((clip) => {
             const myVote = votes[clip.id] || 0;
             return (
-              <Fragment key={clip.id}>
-                <span
+              <div className="clip-row" key={clip.id}>
+                <div
                   className="clip"
                   id={`clip-${clip.id}`}
                   style={clipStyle(clip.score, min, max)}
@@ -168,34 +168,34 @@ export default function HomePage() {
                   <a href={clip.url} target="_blank" rel="noopener noreferrer">
                     {clip.text}
                   </a>
-                  <span className="clip-ctrls">
-                    <button
-                      className={`ctrl-btn${myVote === 1 ? ' voted' : ''}`}
-                      onClick={() => vote(clip, 1)}
-                      aria-label="Vote up"
-                      title="Heat it up"
-                    >
-                      +
-                    </button>
-                    <button
-                      className={`ctrl-btn${myVote === -1 ? ' voted' : ''}`}
-                      onClick={() => vote(clip, -1)}
-                      aria-label="Vote down"
-                      title="Cool it down"
-                    >
-                      &minus;
-                    </button>
-                    <button
-                      className="ctrl-btn"
-                      onClick={() => share(clip)}
-                      aria-label="Copy link to this excerpt"
-                      title="Copy link"
-                    >
-                      {copiedId === clip.id ? '✓' : <ShareIcon />}
-                    </button>
-                  </span>
-                </span>{' '}
-              </Fragment>
+                </div>
+                <div className="clip-ctrls">
+                  <button
+                    className={`ctrl-btn${myVote === 1 ? ' voted' : ''}`}
+                    onClick={() => vote(clip, 1)}
+                    aria-label="Vote up"
+                    title="Heat it up"
+                  >
+                    +
+                  </button>
+                  <button
+                    className={`ctrl-btn${myVote === -1 ? ' voted' : ''}`}
+                    onClick={() => vote(clip, -1)}
+                    aria-label="Vote down"
+                    title="Cool it down"
+                  >
+                    &minus;
+                  </button>
+                  <button
+                    className="ctrl-btn"
+                    onClick={() => share(clip)}
+                    aria-label="Copy link to this excerpt"
+                    title="Copy link"
+                  >
+                    {copiedId === clip.id ? '✓' : <ShareIcon />}
+                  </button>
+                </div>
+              </div>
             );
           })}
         </main>
