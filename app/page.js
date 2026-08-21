@@ -69,6 +69,8 @@ export default function HomePage() {
   const [copiedId, setCopiedId] = useState(null);
   const [error, setError] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(() => {
     try {
       const saved = localStorage.getItem('gw_autorefresh');
@@ -271,25 +273,115 @@ export default function HomePage() {
         </p>
       </footer>
 
-      <button
-        className={`autorefresh-toggle${autoRefresh ? ' active' : ' paused'}`}
-        onClick={() => {
-          setAutoRefresh((prev) => {
-            const next = !prev;
-            try {
-              localStorage.setItem('gw_autorefresh', JSON.stringify(next));
-            } catch {}
-            return next;
-          });
-        }}
-        title={autoRefresh ? 'Auto-refresh active (every 60s) — click to pause' : 'Auto-refresh paused — click to resume'}
-        aria-label={autoRefresh ? 'Pause auto-refresh' : 'Resume auto-refresh'}
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-        </svg>
-        <span>{autoRefresh ? 'LIVE' : 'PAUSED'}</span>
-      </button>
+      {/* Floating Action Menu Button */}
+      <div className="fab-container">
+        {menuOpen && (
+          <div className="fab-menu">
+            <button
+              className="fab-item"
+              onClick={() => {
+                setAutoRefresh((prev) => {
+                  const next = !prev;
+                  try {
+                    localStorage.setItem('gw_autorefresh', JSON.stringify(next));
+                  } catch {}
+                  return next;
+                });
+              }}
+            >
+              <svg
+                className={`refresh-icon${autoRefresh ? ' spinning' : ''}`}
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+              </svg>
+              <span>AUTO-REFRESH: {autoRefresh ? 'LIVE' : 'PAUSED'}</span>
+            </button>
+
+            <a className="fab-item" href="/admin" onClick={() => setMenuOpen(false)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+              <span>EDITORS</span>
+            </a>
+
+            <button
+              className="fab-item"
+              onClick={() => {
+                setAboutOpen(true);
+                setMenuOpen(false);
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              <span>ABOUT</span>
+            </button>
+          </div>
+        )}
+
+        <button
+          className={`fab-btn${menuOpen ? ' open' : ''}`}
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Toggle menu"
+          title="Menu"
+        >
+          {menuOpen ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* About Floating Modal */}
+      {aboutOpen && (
+        <div className="about-backdrop" onClick={() => setAboutOpen(false)}>
+          <div className="about-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="about-header">
+              <h2>ABOUT GUTTERWIRE</h2>
+              <button
+                className="about-close"
+                onClick={() => setAboutOpen(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="about-body">
+              <p>
+                GUTTERWIRE fills the space between a simple headline aggregator and a full news page. Instead of just headlines or wall-to-wall articles, direct excerpts are provided as mini-stories to keep you instantly informed.
+              </p>
+              <p>
+                The news on GUTTERWIRE can come from anywhere across the web—sparing you from having to trek through seedy parts of the internet yourself.
+              </p>
+              <p>
+                The best way to experience GUTTERWIRE is to keep it running in the background while you work, letting a continuous stream of consciousness from humanity trickle in.
+              </p>
+              <div className="about-copyright">
+                &copy; {new Date().getFullYear()} GUTTERWIRE &middot; ALL RIGHTS RESERVED
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
