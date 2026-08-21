@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The G is the actual Bebas Neue glyph outline (the masthead font),
+       baked in as a path because favicons cannot load web fonts.
+       Transform flips the y-up font coordinates and centers the glyph. -->
+  <rect width="64" height="64" rx="12" fill="#000"/>
+  <path transform="translate(19.41 54.37) scale(0.0639 -0.0639)" fill="#fff"
+    d="M33 166V534Q33 619 75.0 664.5Q117 710 197 710Q277 710 319.0 664.5Q361 619 361 534V474H257V541Q257 610 200 610Q143 610 143 541V158Q143 90 200 90Q257 90 257 158V295H202V395H361V166Q361 81 319.0 35.5Q277 -10 197 -10Q117 -10 75.0 35.5Q33 81 33 166Z"/>
+</svg>
