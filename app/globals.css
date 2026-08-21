@@ -31,12 +31,12 @@ a {
 }
 
 .masthead h1 {
-  font-family: var(--font-title), 'Arial Black', Arial, sans-serif;
-  font-weight: 800;
-  font-size: clamp(38px, 9vw, 72px);
-  letter-spacing: -1px;
+  font-family: var(--font-title), 'Impact', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+  font-size: clamp(48px, 11vw, 84px);
+  letter-spacing: 1px;
   text-transform: uppercase;
-  line-height: 1;
+  line-height: 0.95;
   margin: 0;
 }
 

@@ -1,9 +1,9 @@
-import { Syne } from 'next/font/google';
+import { Oswald } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 
-const titleFont = Syne({
-  weight: ['700', '800'],
+const titleFont = Oswald({
+  weight: ['600', '700'],
   subsets: ['latin'],
   variable: '--font-title',
 });
