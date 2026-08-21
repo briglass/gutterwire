@@ -243,7 +243,7 @@ export default function HomePage() {
 
       {clips !== null && clips.length > 0 && hasMore && (
         <p className="wire-status" ref={sentinelRef}>
-          LOADING MORE...
+          DOWN THE GUTTER
         </p>
       )}
 
