@@ -1,4 +1,4 @@
-import { Oswald } from 'next/font/google';
+import { Oswald, Lora } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 
@@ -6,6 +6,11 @@ const titleFont = Oswald({
   weight: ['600', '700'],
   subsets: ['latin'],
   variable: '--font-title',
+});
+
+const bodyFont = Lora({
+  subsets: ['latin'],
+  variable: '--font-body',
 });
 
 export const metadata = {
@@ -21,7 +26,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={titleFont.variable}>
+    <html lang="en" className={`${titleFont.variable} ${bodyFont.variable}`}>
       <head>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-3D5C2X0LEQ"
