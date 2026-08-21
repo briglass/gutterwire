@@ -1,8 +1,8 @@
-import { Bebas_Neue } from 'next/font/google';
+import { Rubik_Wet_Paint } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 
-const titleFont = Bebas_Neue({
+const titleFont = Rubik_Wet_Paint({
   weight: '400',
   subsets: ['latin'],
   variable: '--font-title',

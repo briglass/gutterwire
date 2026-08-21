@@ -31,12 +31,12 @@ a {
 }
 
 .masthead h1 {
-  font-family: var(--font-title), 'Bebas Neue', 'Arial Narrow', Impact, sans-serif;
+  font-family: var(--font-title), 'Creepster', Impact, sans-serif;
   font-weight: 400;
-  font-size: clamp(52px, 12vw, 92px);
-  letter-spacing: 3px;
+  font-size: clamp(38px, 9vw, 70px);
+  letter-spacing: 2px;
   text-transform: uppercase;
-  line-height: 0.9;
+  line-height: 1.15;
   margin: 0;
 }
 
