@@ -26,15 +26,15 @@ function lerp(a, b, t) {
 }
 
 // Score maps to how "hot" an excerpt looks, not where it sits on the page:
-// the top band goes reddish, below that the grays run from strong (dark text,
-// solid chip) down to faded (pale chip, washed-out text).
+// the top band goes reddish, below that the background stays light and clean
+// while text stays dark and high-contrast for readability.
 function clipStyle(score, min, max) {
   const t = max === min ? 0.55 : (score - min) / (max - min);
   if (max !== min && t >= 0.85) {
-    return { backgroundColor: '#f3cbc3', color: '#6e1204', fontWeight: 700 };
+    return { backgroundColor: '#fbebe8', color: '#5a0e02', fontWeight: 700 };
   }
-  const bg = lerp(243, 211, t);
-  const fg = lerp(120, 15, t);
+  const bg = lerp(250, 232, t);
+  const fg = lerp(50, 0, t);
   return {
     backgroundColor: `rgb(${bg},${bg},${bg})`,
     color: `rgb(${fg},${fg},${fg})`,
@@ -126,12 +126,13 @@ export default function HomePage() {
 
   async function share(clip) {
     const url = `${SITE_URL}/#clip-${clip.id}`;
+    const payload = `“${clip.text}”\n\n${url}`;
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(payload);
       setCopiedId(clip.id);
       setTimeout(() => setCopiedId((id) => (id === clip.id ? null : id)), 1600);
     } catch {
-      window.prompt('Copy link:', url);
+      window.prompt('Copy this:', payload);
     }
   }
 
