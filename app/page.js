@@ -61,43 +61,82 @@ function ShareIcon() {
   );
 }
 
+const PAGE_SIZE = 20;
+
 export default function HomePage() {
   const [clips, setClips] = useState(null);
   const [votes, setVotes] = useState({});
   const [copiedId, setCopiedId] = useState(null);
   const [error, setError] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
   const scrolledRef = useRef(false);
+  const loadingRef = useRef(false);
+  const clipsRef = useRef([]);
+  const sentinelRef = useRef(null);
 
-  const refresh = useCallback(async () => {
+  useEffect(() => {
+    clipsRef.current = clips || [];
+  }, [clips]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     try {
-      const res = await fetch('/api/clips', { cache: 'no-store' });
+      const offset = clipsRef.current.length;
+      const res = await fetch(`/api/clips?limit=${PAGE_SIZE}&offset=${offset}`, {
+        cache: 'no-store',
+      });
       if (!res.ok) throw new Error('fetch failed');
       const data = await res.json();
-      setClips(data.clips);
+      // dedupe by id: a clip posted while scrolling shifts the offsets
+      setClips((prev) => {
+        const seen = new Set((prev || []).map((c) => c.id));
+        return [...(prev || []), ...data.clips.filter((c) => !seen.has(c.id))];
+      });
+      if (data.clips.length < PAGE_SIZE) setHasMore(false);
       setError(null);
     } catch {
-      setError('COULD NOT LOAD THE WIRE. TRY AGAIN SHORTLY.');
+      if (!clipsRef.current.length) setError('COULD NOT LOAD THE WIRE. TRY AGAIN SHORTLY.');
+    } finally {
+      loadingRef.current = false;
     }
   }, []);
 
   useEffect(() => {
     setVotes(loadVotes());
-    refresh();
-  }, [refresh]);
+    loadMore();
+  }, [loadMore]);
+
+  // Load the next page whenever the sentinel below the stack nears the
+  // viewport.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore();
+      },
+      { rootMargin: '500px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore, hasMore, clips === null]);
 
   // If someone arrives via a shared link (/#clip-N), scroll to that excerpt
-  // once the clips have rendered; CSS :target rings it.
+  // once it has rendered (paging in more clips until it shows up); CSS
+  // :target rings it.
   useEffect(() => {
     if (!clips || scrolledRef.current) return;
     const hash = window.location.hash;
-    if (hash.startsWith('#clip-')) {
-      const el = document.getElementById(hash.slice(1));
-      if (el) {
-        scrolledRef.current = true;
-        el.scrollIntoView({ block: 'center' });
-      }
+    if (!hash.startsWith('#clip-')) return;
+    const el = document.getElementById(hash.slice(1));
+    if (el) {
+      scrolledRef.current = true;
+      el.scrollIntoView({ block: 'center' });
+    } else if (hasMore) {
+      loadMore();
     }
-  }, [clips]);
+  }, [clips, hasMore, loadMore]);
 
   async function vote(clip, dir) {
     const prev = votes[clip.id] || 0;
@@ -200,6 +239,12 @@ export default function HomePage() {
             );
           })}
         </main>
+      )}
+
+      {clips !== null && clips.length > 0 && hasMore && (
+        <p className="wire-status" ref={sentinelRef}>
+          LOADING MORE...
+        </p>
       )}
 
       <footer className="footer">

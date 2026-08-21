@@ -4,12 +4,24 @@ import { getSessionUser } from '../../../lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/clips           -> visible clips (public)
-// GET /api/clips?all=1     -> all clips including hidden (editors only)
+// GET /api/clips?limit=20&offset=0 -> a page of visible clips (public)
+// GET /api/clips                   -> all visible clips
+// GET /api/clips?all=1             -> everything incl. hidden (editors only)
 export async function GET(request) {
-  const wantAll = new URL(request.url).searchParams.get('all') === '1';
+  const params = new URL(request.url).searchParams;
+  const wantAll = params.get('all') === '1';
   const editor = getSessionUser(request);
-  const clips = await listClips({ includeHidden: wantAll && !!editor });
+
+  let limit = null;
+  let offset = 0;
+  if (params.get('limit') !== null) {
+    const parsedLimit = Math.trunc(Number(params.get('limit')));
+    limit = Number.isFinite(parsedLimit) ? Math.min(100, Math.max(1, parsedLimit)) : 20;
+    const parsedOffset = Math.trunc(Number(params.get('offset')));
+    offset = Number.isFinite(parsedOffset) ? Math.max(0, parsedOffset) : 0;
+  }
+
+  const clips = await listClips({ includeHidden: wantAll && !!editor, limit, offset });
   return NextResponse.json({ clips });
 }
 
