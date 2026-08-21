@@ -61,7 +61,7 @@ a {
 .wire-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   max-width: 720px;
   margin: 0 auto;
 }
@@ -105,11 +105,20 @@ a {
   text-decoration: underline;
 }
 
+/* Horizontal on desktop so the button cluster never exceeds the bubble's
+   height (a taller column would pad out the rows); vertical on mobile to
+   keep the bubbles wide. */
 .clip-ctrls {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 3px;
   flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .clip-ctrls {
+    flex-direction: column;
+  }
 }
 
 .ctrl-btn {
