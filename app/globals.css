@@ -31,12 +31,12 @@ a {
 }
 
 .masthead h1 {
-  font-family: var(--font-title), 'Creepster', Impact, sans-serif;
-  font-weight: 400;
-  font-size: clamp(38px, 9vw, 70px);
-  letter-spacing: 2px;
+  font-family: var(--font-title), 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: clamp(40px, 9.5vw, 76px);
+  letter-spacing: 3px;
   text-transform: uppercase;
-  line-height: 1.15;
+  line-height: 1;
   margin: 0;
 }
 
