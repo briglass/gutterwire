@@ -49,6 +49,37 @@ restart.
      (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
 4. Deploy. Log in at `/admin` and start posting clips.
 
+## Wirebot (AI auto-ingestion)
+
+A scheduled bot fills the wire automatically:
+
+1. **Vercel Cron** hits `/api/ingest` once a day (see `vercel.json`; Hobby
+   tier allows daily — on Pro you can raise it to hourly, e.g.
+   `"0 * * * *"`).
+2. The route pulls candidate articles from the RSS feeds in `lib/feeds.js`,
+   skips anything it has processed before (tracked in the `ingest_log`
+   table), and extracts the main body text of up to `MAX_PER_RUN` new
+   articles.
+3. **Claude Haiku 4.5** judges each article against Gutterwire's tone and,
+   when it accepts one, returns the single most compelling 1-3 sentence
+   passage. The server verifies the excerpt is verbatim from the article
+   before posting.
+4. Accepted excerpts are inserted as normal clips: score 0, linked to the
+   source, `added_by = 'wirebot'`. Editors can hide, delete, or re-score
+   them like anything else, and readers vote as usual.
+
+Setup (Vercel → Settings → Environment Variables):
+
+- `ANTHROPIC_API_KEY` — from https://console.anthropic.com
+- `CRON_SECRET` — any long random string; Vercel automatically sends it as
+  a bearer token on cron requests so nobody else can trigger the bot
+
+Editors can also press **Run wirebot now** on `/admin`. For a no-cost test
+of the fetch/parse half, hit `/api/ingest?dry=1` while logged in — it runs
+everything except the LLM and the insert.
+
+Approximate cost: ~5 articles/day ≈ $0.50/month in Haiku 4.5 tokens.
+
 ## API overview
 
 | Route                 | Method | Auth   | Purpose                              |

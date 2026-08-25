@@ -150,6 +150,46 @@ function AddClipForm({ onAdded }) {
   );
 }
 
+function WirebotPanel({ onFinished }) {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+
+  async function run() {
+    setBusy(true);
+    setResult(null);
+    try {
+      const res = await fetch('/api/ingest', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setResult(`Failed: ${data.error || res.status}`);
+      } else {
+        setResult(
+          `Scanned ${data.candidates} headlines (${data.unseen} new). ` +
+            `Analyzed ${data.processed}: ${data.accepted} posted, ` +
+            `${data.rejected} rejected, ${data.errors} errors.`
+        );
+        onFinished();
+      }
+    } catch {
+      setResult('Failed: network error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="add-form">
+      <h3>Wirebot</h3>
+      <div className="add-form-row">
+        <button className="btn" onClick={run} disabled={busy}>
+          {busy ? 'Scanning the wires...' : 'Run wirebot now'}
+        </button>
+        {result && <span className="wirebot-result">{result}</span>}
+      </div>
+    </div>
+  );
+}
+
 function AdminClip({ clip, onChanged }) {
   const [score, setScore] = useState(String(clip.score));
   const [busy, setBusy] = useState(false);
@@ -279,6 +319,8 @@ export default function AdminPage() {
           </div>
 
           <AddClipForm onAdded={refresh} />
+
+          <WirebotPanel onFinished={refresh} />
 
           {clips.length === 0 && <p className="wire-status">NO CLIPS YET.</p>}
           {clips.map((clip) => (
