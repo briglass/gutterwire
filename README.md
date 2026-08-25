@@ -76,12 +76,14 @@ Setup (Vercel → Settings → Environment Variables):
 
 ### Steering the wirebot with themes
 
-Editors can add **themes** on `/admin` (e.g. "supreme court", "AI
-regulation"). While a theme is active (7 days, or until deleted), the bot
-also searches news for it via Bing News RSS, gives matching articles
-priority for up to 60% of each run's slots, and tells the curator model
-which themes editors are tracking. The usual tone filter, verbatim check,
-and dedupe still apply.
+The **Themes** box on `/admin` is a free-form scratchpad — paste chat
+snippets, topics, links, anything. Pressing **Go** saves it, has the model
+distill it into up to 6 news-search queries, and immediately runs a
+themed-only hunt (Bing News RSS) that posts matching stories. **Save
+only** updates the text without running; the scheduled cron runs also use
+whatever is saved, giving themed articles up to 60% of each run's slots
+alongside general news. The usual tone filter, verbatim check, and dedupe
+still apply.
 
 Editors can also press **Run wirebot now** on `/admin`. For a no-cost test
 of the fetch/parse half, hit `/api/ingest?dry=1` while logged in — it runs

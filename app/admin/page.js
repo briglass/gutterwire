@@ -150,91 +150,93 @@ function AddClipForm({ onAdded }) {
   );
 }
 
-function ThemesPanel() {
-  const [themes, setThemes] = useState([]);
+function ThemesPanel({ onFinished }) {
   const [text, setText] = useState('');
-  const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
-
-  const refresh = useCallback(async () => {
-    const res = await fetch('/api/themes', { cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json();
-      setThemes(data.themes);
-    }
-  }, []);
+  const [status, setStatus] = useState(null);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    fetch('/api/themes', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d) setText(d.text);
+      })
+      .catch(() => {});
+  }, []);
 
-  async function add(e) {
-    e.preventDefault();
+  async function save() {
+    const res = await fetch('/api/themes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) throw new Error('save failed');
+  }
+
+  async function saveOnly() {
     setBusy(true);
-    setError(null);
+    setStatus(null);
     try {
-      const res = await fetch('/api/themes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Could not add theme');
-      } else {
-        setText('');
-        refresh();
-      }
+      await save();
+      setStatus('Saved. Scheduled runs will use this text.');
     } catch {
-      setError('Network error');
+      setStatus('Save failed — try again.');
     } finally {
       setBusy(false);
     }
   }
 
-  async function remove(id) {
-    await fetch(`/api/themes/${id}`, { method: 'DELETE' });
-    refresh();
+  async function go() {
+    setBusy(true);
+    setStatus('Saving and hunting for matching stories...');
+    try {
+      await save();
+      const res = await fetch('/api/ingest?themed=1', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus(`Failed: ${data.error || res.status}`);
+      } else if (!data.themes.length) {
+        setStatus('No news topics found in the text — nothing to hunt for.');
+      } else {
+        setStatus(
+          `Topics: ${data.themes.join(' · ')} — analyzed ${data.processed} articles: ` +
+            `${data.accepted} posted, ${data.rejected} rejected, ${data.errors} errors.`
+        );
+        onFinished();
+      }
+    } catch {
+      setStatus('Failed: network error');
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
     <div className="add-form">
       <h3>Themes</h3>
       <p className="panel-hint">
-        Wirebot hunts for news matching these themes (each stays active for 7 days).
+        Paste anything — chat snippets, topics, rambling notes. GO saves it, distills the
+        news topics, and immediately hunts for matching stories. Scheduled runs also lean
+        on whatever is saved here.
       </p>
-      {themes.length > 0 && (
-        <div className="theme-chips">
-          {themes.map((t) => (
-            <span className="theme-chip" key={t.id}>
-              {t.text}
-              <button
-                className="theme-chip-x"
-                onClick={() => remove(t.id)}
-                aria-label={`Remove theme ${t.text}`}
-              >
-                &times;
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-      <form className="add-form-row" onSubmit={add}>
-        <div className="field grow">
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="e.g. supreme court, AI regulation, oil prices"
-            maxLength={80}
-            required
-          />
-        </div>
-        <button className="btn" type="submit" disabled={busy}>
-          Add
+      <div className="field">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          rows={6}
+          maxLength={6000}
+          placeholder={'e.g. paste from the group chat:\n"did you see the fed thing today??"\n"more layoffs at the studios..."'}
+        />
+      </div>
+      <div className="add-form-row">
+        <button className="btn" onClick={go} disabled={busy}>
+          {busy ? 'Working...' : 'Go'}
         </button>
-      </form>
-      {error && <p className="error-msg">{error}</p>}
+        <button className="btn secondary" onClick={saveOnly} disabled={busy}>
+          Save only
+        </button>
+      </div>
+      {status && <p className="panel-hint themes-status">{status}</p>}
     </div>
   );
 }
@@ -409,7 +411,7 @@ export default function AdminPage() {
 
           <AddClipForm onAdded={refresh} />
 
-          <ThemesPanel />
+          <ThemesPanel onFinished={refresh} />
 
           <WirebotPanel onFinished={refresh} />
 

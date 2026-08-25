@@ -498,41 +498,9 @@ textarea:focus {
   margin: 0 0 10px;
 }
 
-.theme-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.theme-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #efefef;
-  border-radius: 999px;
-  padding: 5px 6px 5px 12px;
-  font-size: 13px;
-}
-
-.theme-chip-x {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border: 0;
-  border-radius: 50%;
-  background: #ccc;
-  color: #333;
-  font-size: 13px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.theme-chip-x:hover {
-  background: #c00;
-  color: #fff;
+.themes-status {
+  margin-top: 10px;
+  word-wrap: break-word;
 }
 
 .admin-clip {

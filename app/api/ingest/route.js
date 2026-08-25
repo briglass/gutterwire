@@ -22,11 +22,12 @@ async function handle(request) {
 
   const params = new URL(request.url).searchParams;
   const dryRun = params.get('dry') === '1';
+  const themedOnly = params.get('themed') === '1';
   const parsedLimit = Math.trunc(Number(params.get('limit')));
   const limit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? Math.min(10, parsedLimit) : undefined;
 
   try {
-    const summary = await runIngest({ dryRun, limit });
+    const summary = await runIngest({ dryRun, limit, themedOnly });
     return NextResponse.json({ caller, ...summary });
   } catch (err) {
     return NextResponse.json(
