@@ -74,6 +74,15 @@ Setup (Vercel → Settings → Environment Variables):
 - `CRON_SECRET` — any long random string; Vercel automatically sends it as
   a bearer token on cron requests so nobody else can trigger the bot
 
+### Steering the wirebot with themes
+
+Editors can add **themes** on `/admin` (e.g. "supreme court", "AI
+regulation"). While a theme is active (7 days, or until deleted), the bot
+also searches news for it via Bing News RSS, gives matching articles
+priority for up to 60% of each run's slots, and tells the curator model
+which themes editors are tracking. The usual tone filter, verbatim check,
+and dedupe still apply.
+
 Editors can also press **Run wirebot now** on `/admin`. For a no-cost test
 of the fetch/parse half, hit `/api/ingest?dry=1` while logged in — it runs
 everything except the LLM and the insert.

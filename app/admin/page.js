@@ -150,6 +150,95 @@ function AddClipForm({ onAdded }) {
   );
 }
 
+function ThemesPanel() {
+  const [themes, setThemes] = useState([]);
+  const [text, setText] = useState('');
+  const [error, setError] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  const refresh = useCallback(async () => {
+    const res = await fetch('/api/themes', { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      setThemes(data.themes);
+    }
+  }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  async function add(e) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/themes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Could not add theme');
+      } else {
+        setText('');
+        refresh();
+      }
+    } catch {
+      setError('Network error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function remove(id) {
+    await fetch(`/api/themes/${id}`, { method: 'DELETE' });
+    refresh();
+  }
+
+  return (
+    <div className="add-form">
+      <h3>Themes</h3>
+      <p className="panel-hint">
+        Wirebot hunts for news matching these themes (each stays active for 7 days).
+      </p>
+      {themes.length > 0 && (
+        <div className="theme-chips">
+          {themes.map((t) => (
+            <span className="theme-chip" key={t.id}>
+              {t.text}
+              <button
+                className="theme-chip-x"
+                onClick={() => remove(t.id)}
+                aria-label={`Remove theme ${t.text}`}
+              >
+                &times;
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      <form className="add-form-row" onSubmit={add}>
+        <div className="field grow">
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="e.g. supreme court, AI regulation, oil prices"
+            maxLength={80}
+            required
+          />
+        </div>
+        <button className="btn" type="submit" disabled={busy}>
+          Add
+        </button>
+      </form>
+      {error && <p className="error-msg">{error}</p>}
+    </div>
+  );
+}
+
 function WirebotPanel({ onFinished }) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
@@ -319,6 +408,8 @@ export default function AdminPage() {
           </div>
 
           <AddClipForm onAdded={refresh} />
+
+          <ThemesPanel />
 
           <WirebotPanel onFinished={refresh} />
 
